@@ -53,5 +53,7 @@
 # Ignore all local history of files
 .history
 .ionide
-
+# my additions
+build/
+out/
 # End of https://www.toptal.com/developers/gitignore/api/c++,visualstudiocode

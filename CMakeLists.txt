@@ -30,10 +30,24 @@ link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 
 
-#### Practical 1 ####
-add_executable(equest main.cpp
+#### Project ####
+add_executable(equest src/main.cpp
+    src/player.cpp
+    src/player.hpp
+    src/game_system.cpp
+    src/game_system.hpp
+    src/game_parameters.hpp
+    src/input.cpp
+    src/input.hpp
+    src/settings.cpp
+    src/settings.hpp
+    src/menu.cpp
+    src/menu.hpp
+    src/enemy.cpp
+    src/enemy.hpp
+    src/weapon.cpp
+    src/weapon.hpp
     CMakeLists.txt
-    
     )
-target_include_directories(equest PRIVATE ${SFML_INCS})
+target_include_directories(equest PRIVATE ${SFML_INCS} src)
 target_link_libraries(equest sfml-graphics)
