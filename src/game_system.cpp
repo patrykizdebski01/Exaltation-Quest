@@ -4,6 +4,7 @@
 using param = Parameters;
 
 Player GameSystem::player;
+std::vector<std::shared_ptr<Weapon>> GameSystem::weapons;
 sf::View GameSystem::camera;
 sf::VertexArray GameSystem::grid;
 
@@ -26,14 +27,23 @@ void GameSystem::reset() {
   player.setPosition(param::map_width / 2.f, param::map_height / 2.f);
   camera.setSize(sf::Vector2f(param::game_width, param::game_height));
   camera.setCenter(player.getPosition());
+
+  //The warrior starts with the greatsword
+  weapons.clear();
+  weapons.push_back(std::make_shared<Greatsword>());
 }
 
 void GameSystem::clean() {
+  for (std::shared_ptr<Weapon> &weapon : weapons)
+    weapon.reset();
+  weapons.clear();
   grid.clear();
 }
 
 void GameSystem::update(const float &dt) {
   player.update(dt);
+  for (std::shared_ptr<Weapon> &weapon : weapons)
+    weapon->update(dt);
   //The camera follows the player
   camera.setCenter(player.getPosition());
 }
@@ -41,5 +51,7 @@ void GameSystem::update(const float &dt) {
 void GameSystem::render(sf::RenderWindow &window) {
   window.setView(camera);
   window.draw(grid);
+  for (const std::shared_ptr<Weapon> &weapon : weapons)
+    window.draw(*(weapon.get()));
   window.draw(player);
 }

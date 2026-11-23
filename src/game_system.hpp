@@ -1,9 +1,13 @@
 #pragma once
+#include <vector>
+#include <memory>
 #include <SFML/Graphics.hpp>
 #include "player.hpp"
+#include "weapon.hpp"
 
 struct GameSystem{
   static Player player;
+  static std::vector<std::shared_ptr<Weapon>> weapons;
   static sf::View camera;
   static sf::VertexArray grid;
 

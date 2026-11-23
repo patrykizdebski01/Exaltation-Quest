@@ -8,4 +8,11 @@ struct Parameters{
   static constexpr int map_height = game_height * map_screens;
   static constexpr float player_radius = 10.f;
   static constexpr float player_speed = 300.f;
+
+  // Greatsword
+  static constexpr float greatsword_range = 120.f;      // how far the swing reaches
+  static constexpr float greatsword_cooldown = 1.1f;    // seconds between swings
+  static constexpr float greatsword_swing_time = 0.18f; // how long one swing takes
+  static constexpr float greatsword_damage = 18.f;
+  static constexpr int swing_points = 18;               // how smooth the swing arc is
 };
