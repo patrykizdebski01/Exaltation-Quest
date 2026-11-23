@@ -6,7 +6,7 @@ using gs = GameSystem;
 using param = Parameters;
 
 int main(){
-  sf::RenderWindow window(sf::VideoMode({param::game_width, param::game_height}), "Exaltation Quest");
+  sf::RenderWindow window(sf::VideoMode({param::game_width, param::game_height}), "Survivor");
   window.setVerticalSyncEnabled(true);
 
   gs::init();

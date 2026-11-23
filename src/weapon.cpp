@@ -9,7 +9,6 @@ using gs = GameSystem;
 Weapon::Weapon() : sf::ConvexShape() {}
 
 //Define the weapon deconstructor.
-//Although we set this to pure virtual, we still have to define it.
 Weapon::~Weapon() = default;
 
 void Weapon::update(const float &dt) {
@@ -41,6 +40,14 @@ void Greatsword::update(const float &dt) {
   if (_cooldown <= 0.f) {
     swing();
   }
+}
+
+std::string Greatsword::get_name() const {
+  return "Greatsword";
+}
+
+//The HUD icon: a sword made from three rectangles, tilted 45 degrees, in the middle of the slot.
+void Greatsword::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
 }
 
 void Greatsword::swing() {

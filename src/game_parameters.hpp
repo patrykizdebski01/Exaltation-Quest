@@ -8,6 +8,19 @@ struct Parameters{
   static constexpr int map_height = game_height * map_screens;
   static constexpr float player_radius = 10.f;
   static constexpr float player_speed = 300.f;
+  static constexpr float player_health = 100.f;
+  static constexpr float xp_first_level = 10.f;   // XP needed for the first level up
+  static constexpr float run_length = 1200.f;     // a run lasts 20 minutes
+
+  // HUD
+  static constexpr float hud_margin = 20.f;       // gap between the HUD and the edge of the screen
+  static constexpr float slot_size = 48.f;        // one weapon / relic slot
+  static constexpr float slot_gap = 8.f;
+  static constexpr int weapon_slots = 6;
+  static constexpr int relic_slots = 4;
+  static constexpr float health_bar_width = 60.f; // the small bar under the player
+  static constexpr float health_bar_height = 8.f;
+ 
 
   // Greatsword
   static constexpr float greatsword_range = 120.f;      // how far the swing reaches

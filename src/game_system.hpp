@@ -10,6 +10,8 @@ struct GameSystem{
   static std::vector<std::shared_ptr<Weapon>> weapons;
   static sf::View camera;
   static sf::VertexArray grid;
+  //Seconds since the run started
+  static float elapsed;
 
   static void init();
   static void reset();

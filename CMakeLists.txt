@@ -47,6 +47,8 @@ add_executable(equest src/main.cpp
     src/enemy.hpp
     src/weapon.cpp
     src/weapon.hpp
+    src/hud.cpp
+    src/hud.hpp
     CMakeLists.txt
     )
 target_include_directories(equest PRIVATE ${SFML_INCS} src)

@@ -1,5 +1,5 @@
 #pragma once
-// EMPTY FOR NOW. Still to add here:
+// EMPTY FOR NOW. Still to add here (brief: remappable controls + controller support):
 //  - a list of actions: move up / down / left / right, confirm, pause
 //  - which key and which controller button is bound to each action (kept in settings)
 //  - asking "is this action pressed?" instead of reading the keyboard directly in player.cpp

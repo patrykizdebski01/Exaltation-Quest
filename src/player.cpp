@@ -7,6 +7,15 @@ using param = Parameters;
 Player::Player() : sf::CircleShape(param::player_radius) {
   //origin in the middle, so the position is the centre of the dot
   setOrigin(param::player_radius, param::player_radius);
+
+  max_health = param::player_health;
+  health = max_health;
+  level = 1;
+  xp = 0.f;
+  xp_to_next = param::xp_first_level;
+  gold = 0;
+  kills = 0;
+  score = 0;
 }
 
 void Player::update(const float &dt) {

@@ -1,5 +1,5 @@
 #pragma once
-// EMPTY FOR NOW. Still to add here:
+// EMPTY FOR NOW. Still to add here (brief: some form of AI or physics):
 //  - an Enemy class that chases the player
 //  - spawning enemies just off screen on a timer, more of them as time goes on
 //  - enemies not stacking on top of each other
