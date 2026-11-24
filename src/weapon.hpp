@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 class Weapon : public sf::ConvexShape {
 public:
@@ -10,6 +11,8 @@ public:
   virtual void update(const float &dt);
   //The name shown in the HUD
   virtual std::string get_name() const = 0;
+  //Draws the weapon in the world. Most weapons are just their own shape, so that is the default.
+  virtual void render(sf::RenderWindow &window) const;
   //Draws the weapon's icon inside a HUD slot. position = top left of the slot, size = width and height.
   virtual void draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const = 0;
 
@@ -38,4 +41,50 @@ protected:
   float _swing_time = 0.f;
   //Side of the current swing: 1 = right, -1 = left
   float _side = -1.f;
+};
+//The player gets an aura that damages every enemy inside it, once every interval
+class FireAura : public Weapon {
+public:
+  FireAura();
+  void update(const float &dt) override;
+  std::string get_name() const override;
+  void draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const override;
+
+  //True for the one frame each time the aura damages. Enemies are only hurt when this is true.
+  bool is_ticking() const;
+  float get_damage() const;
+  //Is a circle (an enemy, later) inside the aura?
+  bool hits(const sf::Vector2f &position, const float &radius) const;
+
+protected:
+  bool _ticking = false;
+  //Seconds left of the thicker outline after a tick
+  float _flash = 0.f;
+};
+
+//One thrown axe
+struct Axe {
+  sf::Vector2f position;
+  sf::Vector2f direction;
+  float life;     // seconds left before it disappears
+  float angle;    // how far it has spun
+};
+
+//Throws four axes in an X pattern (up-left, up-right, down-left, down-right) every few seconds
+class ThrowingAxes : public Weapon {
+public:
+  ThrowingAxes();
+  void update(const float &dt) override;
+  //This weapon is lots of little axes, not one shape, so it draws them itself
+  void render(sf::RenderWindow &window) const override;
+  std::string get_name() const override;
+  void draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const override;
+
+  float get_damage() const;
+  //Is a circle (an enemy, later) touching an axe? If it is, that axe is used up and disappears.
+  bool hits(const sf::Vector2f &position, const float &radius);
+
+protected:
+  void throw_axes();
+  std::vector<Axe> _axes;
 };

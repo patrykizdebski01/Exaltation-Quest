@@ -14,7 +14,9 @@ Weapon::~Weapon() = default;
 void Weapon::update(const float &dt) {
   _cooldown -= dt;
 }
-
+void Weapon::render(sf::RenderWindow &window) const {
+  window.draw(*this);
+}
 Greatsword::Greatsword() : Weapon() {
   _cooldown = 0.3f;   // first swing shortly after the game starts
 }
@@ -89,4 +91,150 @@ bool Greatsword::hits(const sf::Vector2f &position, const float &radius) const {
     return false;
   //It has to be on the side that is being swung
   return offset.x * _side >= -radius;
+}
+// ---------- Fire Aura ----------
+
+FireAura::FireAura() : Weapon() {
+  //A circle of points round (0, 0). The weapon is moved onto the player in update.
+  const float pi = 3.14159265f;
+  setPointCount(param::aura_points);
+  for (int i = 0; i < param::aura_points; ++i) {
+    float angle = 2.f * pi * i / param::aura_points;
+    setPoint(i, sf::Vector2f(std::cos(angle) * param::fire_aura_radius,
+                             std::sin(angle) * param::fire_aura_radius));
+  }
+  //Only the outline is drawn, so you can still see inside the aura
+  setFillColor(sf::Color::Transparent);
+  setOutlineThickness(2.f);
+  _cooldown = param::fire_aura_interval;
+}
+
+void FireAura::update(const float &dt) {
+  Weapon::update(dt);   // counts the cooldown down: here it is the time until the next tick
+
+  //The aura is always centred on the player
+  setPosition(gs::player.getPosition());
+
+  _ticking = false;
+  if (_flash > 0.f) {
+    _flash -= dt;
+    if (_flash <= 0.f)
+      setOutlineThickness(2.f);
+  }
+
+  if (_cooldown <= 0.f) {
+    _ticking = true;
+    _cooldown = param::fire_aura_interval;
+    _flash = param::fire_aura_flash;
+    setOutlineThickness(6.f);   // flash thicker so you can see it hurt
+  }
+}
+
+std::string FireAura::get_name() const {
+  return "Fire Aura";
+}
+
+//TODO: draw the fire aura sprite from the spritesheet here, inside the slot
+void FireAura::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
+}
+
+bool FireAura::is_ticking() const {
+  return _ticking;
+}
+
+float FireAura::get_damage() const {
+  return param::fire_aura_damage;
+}
+
+//Used by enemies later:  if (aura->is_ticking() && aura->hits(enemy.getPosition(), enemy.radius)) ...
+bool FireAura::hits(const sf::Vector2f &position, const float &radius) const {
+  sf::Vector2f offset = position - getPosition();
+  float distance = std::sqrt(offset.x * offset.x + offset.y * offset.y);
+  return distance <= param::fire_aura_radius + radius;
+}
+
+// ---------- Throwing Axes ----------
+
+ThrowingAxes::ThrowingAxes() : Weapon() {
+  _cooldown = 0.5f;   // first throw shortly after the game starts
+}
+
+void ThrowingAxes::update(const float &dt) {
+  Weapon::update(dt);
+
+  if (_cooldown <= 0.f) {
+    throw_axes();
+    _cooldown = param::axe_cooldown;
+  }
+
+  //Move, spin and age every axe. Axes that have run out of time are removed.
+  for (std::size_t i = 0; i < _axes.size();) {
+    _axes[i].position += _axes[i].direction * param::axe_speed * dt;
+    _axes[i].angle += param::axe_spin * dt;
+    _axes[i].life -= dt;
+    if (_axes[i].life <= 0.f)
+      _axes.erase(_axes.begin() + i);
+    else
+      ++i;
+  }
+}
+
+//Four axes, one in each diagonal direction, starting on the player
+void ThrowingAxes::throw_axes() {
+  const float diagonal = 0.70710678f;   // 1 / square root of 2, so diagonals are not faster
+  const float x[4] = {-diagonal, diagonal, -diagonal, diagonal};
+  const float y[4] = {-diagonal, -diagonal, diagonal, diagonal};
+  for (int i = 0; i < 4; ++i) {
+    Axe axe;
+    axe.position = gs::player.getPosition();
+    axe.direction = sf::Vector2f(x[i], y[i]);
+    axe.life = param::axe_lifetime;
+    axe.angle = 0.f;
+    _axes.push_back(axe);
+  }
+}
+
+//Each axe is a handle and a triangle head, spun round its middle
+void ThrowingAxes::render(sf::RenderWindow &window) const {
+  const float r = param::axe_radius;
+  for (const Axe &axe : _axes) {
+    sf::Transform spin;
+    spin.translate(axe.position);
+    spin.rotate(axe.angle);
+
+    sf::RectangleShape handle(sf::Vector2f(r * 2.f, r * 0.25f));
+    handle.setPosition(-r, -r * 0.125f);
+    window.draw(handle, spin);
+
+    sf::ConvexShape head(3);
+    head.setPoint(0, sf::Vector2f(r * 0.2f, 0.f));
+    head.setPoint(1, sf::Vector2f(r * 0.9f, -r * 0.9f));
+    head.setPoint(2, sf::Vector2f(r * 0.9f, r * 0.9f));
+    window.draw(head, spin);
+  }
+}
+
+std::string ThrowingAxes::get_name() const {
+  return "Throwing Axes";
+}
+
+//TODO: draw the throwing axes sprite from the spritesheet here, inside the slot
+void ThrowingAxes::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
+}
+
+float ThrowingAxes::get_damage() const {
+  return param::axe_damage;
+}
+
+//Used by enemies later:  if (axes->hits(enemy.getPosition(), enemy.radius)) enemy takes axes->get_damage()
+bool ThrowingAxes::hits(const sf::Vector2f &position, const float &radius) {
+  for (std::size_t i = 0; i < _axes.size(); ++i) {
+    sf::Vector2f offset = position - _axes[i].position;
+    float distance = std::sqrt(offset.x * offset.x + offset.y * offset.y);
+    if (distance <= param::axe_radius + radius) {
+      _axes.erase(_axes.begin() + i);   // the axe is used up
+      return true;
+    }
+  }
+  return false;
 }

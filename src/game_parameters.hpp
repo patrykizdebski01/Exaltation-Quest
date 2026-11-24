@@ -28,4 +28,20 @@ struct Parameters{
   static constexpr float greatsword_swing_time = 0.18f; // how long one swing takes
   static constexpr float greatsword_damage = 18.f;
   static constexpr int swing_points = 18;               // how smooth the swing arc is
+  //Fire Aura
+  static constexpr float fire_aura_radius = 100.f;
+  static constexpr float fire_aura_interval = 0.5f;
+  static constexpr float fire_aura_damage = 6.f;
+  static constexpr float fire_aura_flash = 0.1f;
+  static constexpr int aura_points = 40;
+
+  //Throwing Axes
+  static constexpr float axe_cooldown = 1.5f;
+  static constexpr float axe_speed = 350.f;
+  static constexpr float axe_lifetime = 1.2f;
+  static constexpr float axe_spin = 720.f;
+  static constexpr float axe_radius = 14.f;
+  static constexpr float axe_damage = 14.f;
+
+
 };

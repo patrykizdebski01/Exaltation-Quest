@@ -35,6 +35,10 @@ void GameSystem::reset() {
   //The warrior starts with the greatsword
   weapons.clear();
   weapons.push_back(std::make_shared<Greatsword>());
+    weapons.push_back(std::make_shared<Greatsword>());
+  //TODO: only for testing. Later the player gets these from level ups.
+  weapons.push_back(std::make_shared<FireAura>());
+  weapons.push_back(std::make_shared<ThrowingAxes>());
 
   
 }
@@ -59,7 +63,7 @@ void GameSystem::render(sf::RenderWindow &window) {
   window.setView(camera);
   window.draw(grid);
   for (const std::shared_ptr<Weapon> &weapon : weapons)
-    window.draw(*(weapon.get()));
+      weapon->render(window);
   window.draw(player);
   Hud::render(window);
 }
