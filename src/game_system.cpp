@@ -5,7 +5,7 @@
 #include "levelup.hpp"
 #include <cmath>
 #include <random>
-
+#include <iostream>
 
 using param = Parameters;
 
@@ -16,6 +16,9 @@ std::vector<Relic> GameSystem::collected_relics;
 
 sf::View GameSystem::camera;
 sf::VertexArray GameSystem::grid;
+sf::Texture GameSystem::grass;
+sf::RectangleShape GameSystem::ground;
+bool GameSystem::grass_loaded = false;
 float GameSystem::elapsed = 0.f;
 
 static float distance_between(const sf::Vector2f &a, const sf::Vector2f &b) {
@@ -63,6 +66,19 @@ void GameSystem::init() {
   }
   Hud::init();
   Sprites::init();
+  
+  //One rectangle the size of the whole map, covered in grass. The texture rectangle is bigger than
+  //the picture, so SFML repeats the 32 x 32 grass tile over and over to fill it.
+  grass_loaded = grass.loadFromFile("resources/images/grass.png");
+  if (!grass_loaded) {
+    std::cerr << "Failed to load resources/images/grass.png!" << std::endl;
+  } else {
+    grass.setRepeated(true);
+    ground.setSize(sf::Vector2f(param::map_width, param::map_height));
+    ground.setTexture(&grass);
+    ground.setTextureRect(sf::IntRect(0, 0, static_cast<int>(param::map_width / param::grass_scale),
+                                            static_cast<int>(param::map_height / param::grass_scale)));
+  }
   reset();
 }
 
@@ -131,11 +147,14 @@ void GameSystem::update(const float &dt) {
 void GameSystem::render(sf::RenderWindow &window) {
   window.setView(camera);
   window.draw(grid);
+  if (grass_loaded)
+    window.draw(ground);
   for (const Relic &relic : relics)
     relic.render(window);
   for (const std::shared_ptr<Weapon> &weapon : weapons)
       weapon->render(window);
-  window.draw(player);
+  //The player's circle is only used for its position and collisions. The knight sprite is drawn instead.
+  Sprites::draw_entity(window, Entity::knight, player.getPosition(), param::player_draw_size, player.facing_left);  
   Hud::render(window);
   if (LevelUp::shown)
     LevelUp::render(window);

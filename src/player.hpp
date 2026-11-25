@@ -19,6 +19,8 @@ public:
   int gold;
   int kills;
   int score;
+  //Which way the sprite faces. The picture faces right, so it is flipped when this is true.
+  bool facing_left;
   //Changed by relics. 1.0 means no change.
   float damage_multiplier;
   float cooldown_multiplier;

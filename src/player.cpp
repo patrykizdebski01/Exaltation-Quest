@@ -16,6 +16,7 @@ Player::Player() : sf::CircleShape(param::player_radius) {
   gold = 0;
   kills = 0;
   score = 0;
+  facing_left = false;
   damage_multiplier = 1.f;
   cooldown_multiplier = 1.f;
   speed_multiplier = 1.f;
@@ -40,7 +41,11 @@ void Player::update(const float &dt) {
     direction.x -= 1.f;
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     direction.x += 1.f;
-
+  //Face the way the player is moving (and keep facing that way when they stop)
+  if (direction.x < 0.f)
+    facing_left = true;
+  else if (direction.x > 0.f)
+    facing_left = false;
   //Normalise, so moving diagonally is not faster
   float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
   if (length > 0.f)

@@ -11,6 +11,10 @@ struct GameSystem{
   static std::vector<std::shared_ptr<Weapon>> weapons;
   static sf::View camera;
   static sf::VertexArray grid;
+  //The grass the map is covered in
+  static sf::Texture grass;
+  static sf::RectangleShape ground;
+  static bool grass_loaded;
   //Relics still lying on the map
   static std::vector<Relic> relics;
   //Relics the player has picked up, shown in the HUD

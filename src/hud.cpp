@@ -100,7 +100,7 @@ void Hud::render(sf::RenderWindow &window) {
   //so it stays with the player.
   draw_bar(window,
            player.getPosition().x - param::health_bar_width / 2.f,
-           player.getPosition().y + param::player_radius + 8.f,
+           player.getPosition().y + param::player_draw_size / 2.f,
            param::health_bar_width, param::health_bar_height,
            player.health / player.max_health);
 

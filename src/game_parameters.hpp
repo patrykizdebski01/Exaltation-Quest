@@ -6,11 +6,15 @@ struct Parameters{
   static constexpr int map_screens = 9;       // the map is 9 x 9 screens big
   static constexpr int map_width = game_width * map_screens;
   static constexpr int map_height = game_height * map_screens;
-  static constexpr float player_radius = 10.f;
+  static constexpr float player_radius = 16.f;        // the size of the player's collision circle
+  static constexpr float player_draw_size = 64.f;     // how big the player's sprite is drawn (2 x 32)
   static constexpr float player_speed = 300.f;
   static constexpr float player_health = 100.f;
   static constexpr float xp_first_level = 10.f;   // XP needed for the first level up
   static constexpr float run_length = 1200.f;     // a run lasts 20 minutes
+  // Grass
+  static constexpr bool show_grid = false;        // the white lines round every screen (for debugging)
+  static constexpr float grass_scale = 2.f;       // the 32 x 32 grass tile is drawn twice as big
 
   static constexpr float xp_growth = 1.3f;        // each level needs this many times more XP than the last
   // Relics
