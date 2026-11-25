@@ -30,11 +30,12 @@ std::string Weapon::get_upgrade_text() const {
 }
 
 float Weapon::damage_scale() const {
-  return 1.f + param::upgrade_damage * (_level - 1);
+    return (1.f + param::upgrade_damage * (_level - 1)) * gs::player.damage_multiplier;
 }
 
 float Weapon::speed_scale() const {
-  return 1.f + param::upgrade_speed * (_level - 1);
+    //Dividing by the cooldown multiplier: a relic that makes it 0.8 makes weapons 1.25 times faster
+  return (1.f + param::upgrade_speed * (_level - 1)) / gs::player.cooldown_multiplier;
 }
 void Weapon::render(sf::RenderWindow &window) const {
   window.draw(*this);

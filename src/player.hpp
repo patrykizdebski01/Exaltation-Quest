@@ -19,4 +19,8 @@ public:
   int gold;
   int kills;
   int score;
+  //Changed by relics. 1.0 means no change.
+  float damage_multiplier;
+  float cooldown_multiplier;
+  float speed_multiplier;
 };

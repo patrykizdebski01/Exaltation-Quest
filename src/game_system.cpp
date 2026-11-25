@@ -2,15 +2,52 @@
 #include "game_parameters.hpp"
 #include "hud.hpp"
 #include "levelup.hpp"
+#include <cmath>
+#include <random>
 
 using param = Parameters;
 
 Player GameSystem::player;
 std::vector<std::shared_ptr<Weapon>> GameSystem::weapons;
+std::vector<Relic> GameSystem::relics;
+std::vector<Relic> GameSystem::collected_relics;
+
 sf::View GameSystem::camera;
 sf::VertexArray GameSystem::grid;
 float GameSystem::elapsed = 0.f;
 
+static float distance_between(const sf::Vector2f &a, const sf::Vector2f &b) {
+  sf::Vector2f offset = a - b;
+  return std::sqrt(offset.x * offset.x + offset.y * offset.y);
+}
+
+//One of each relic, somewhere random on the map. Not too near the edge, not near where the player
+//starts, and not near each other, so the player has to travel to find them.
+void GameSystem::place_relics() {
+  relics.clear();
+  collected_relics.clear();
+
+  static std::mt19937 engine((std::random_device())());
+  std::uniform_real_distribution<float> random_x(param::relic_edge_margin, param::map_width - param::relic_edge_margin);
+  std::uniform_real_distribution<float> random_y(param::relic_edge_margin, param::map_height - param::relic_edge_margin);
+  const sf::Vector2f start(param::map_width / 2.f, param::map_height / 2.f);
+
+  for (int type = 0; type < 3; ++type) {
+    sf::Vector2f position = start;
+    //Keep picking random places until one is far enough from everything (gives up after 1000 tries)
+    for (int attempt = 0; attempt < 1000; ++attempt) {
+      position = sf::Vector2f(random_x(engine), random_y(engine));
+      bool good = distance_between(position, start) >= param::relic_min_distance_from_start;
+      for (const Relic &other : relics) {
+        if (distance_between(position, other.getPosition()) < param::relic_min_distance_between)
+          good = false;
+      }
+      if (good)
+        break;
+    }
+    relics.push_back(Relic(static_cast<RelicType>(type), position));
+  }
+}
 void GameSystem::init() {
   //Lines round the edge of the map and round every screen-sized square,
   //so you can see yourself moving and how big the map is.
@@ -36,6 +73,7 @@ void GameSystem::reset() {
   //The warrior starts with the greatsword
   weapons.push_back(std::make_shared<Greatsword>());
   LevelUp::clean();
+  place_relics();
 
   
 }
@@ -45,6 +83,8 @@ void GameSystem::clean() {
     weapon.reset();
   weapons.clear();
   grid.clear();
+  relics.clear();
+  collected_relics.clear();
 }
 
 void GameSystem::update(const float &dt) {
@@ -57,7 +97,18 @@ void GameSystem::update(const float &dt) {
   player.update(dt);
   for (std::shared_ptr<Weapon> &weapon : weapons)
     weapon->update(dt);
-  //The camera follows the player
+    //Pick up any relic the player walks into
+  const float player_radius = param::player_radius;   // a local copy, because touching takes a reference
+  for (std::size_t i = 0; i < relics.size();) {
+    if (relics[i].touching(player.getPosition(), player_radius)) {
+      relics[i].apply(player);
+      collected_relics.push_back(relics[i]);
+      relics.erase(relics.begin() + i);
+    } else {
+      ++i;
+    }
+  }
+    //The camera follows the player
   camera.setCenter(player.getPosition());
   //FOR TESTING LEVEL UPS ONLY 
   static bool l_was_down = false;
@@ -77,6 +128,8 @@ void GameSystem::update(const float &dt) {
 void GameSystem::render(sf::RenderWindow &window) {
   window.setView(camera);
   window.draw(grid);
+  for (const Relic &relic : relics)
+    window.draw(relic);
   for (const std::shared_ptr<Weapon> &weapon : weapons)
       weapon->render(window);
   window.draw(player);

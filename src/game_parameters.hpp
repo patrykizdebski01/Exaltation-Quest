@@ -13,7 +13,14 @@ struct Parameters{
   static constexpr float run_length = 1200.f;     // a run lasts 20 minutes
 
   static constexpr float xp_growth = 1.3f;        // each level needs this many times more XP than the last
-
+  // Relics
+  static constexpr float relic_radius = 18.f;                    // size of a relic on the map
+  static constexpr float relic_edge_margin = 400.f;              // relics never spawn this close to the edge of the map
+  static constexpr float relic_min_distance_from_start = 1500.f; // or this close to where the player starts
+  static constexpr float relic_min_distance_between = 2500.f;    // or this close to each other
+  static constexpr float relic_damage_bonus = 0.3f;              // damage relic: +30% damage
+  static constexpr float relic_cooldown_bonus = 0.2f;            // cooldown relic: weapons wait 20% less between attacks
+  static constexpr float relic_speed_bonus = 0.25f;              // speed relic: +25% movement speed
   // Level up / weapon upgrades
   static constexpr int levelup_choices = 3;       // how many options the level-up screen offers
   static constexpr int weapon_max_level = 5;
@@ -24,7 +31,8 @@ struct Parameters{
   static constexpr float slot_size = 48.f;        // one weapon / relic slot
   static constexpr float slot_gap = 8.f;
   static constexpr int weapon_slots = 6;
-  static constexpr int relic_slots = 4;
+  static constexpr int relic_slots = 3;
+  static constexpr float arrow_margin = 40.f;     // how far from the screen edge the arrows sit
   static constexpr float health_bar_width = 60.f; // the small bar under the player
   static constexpr float health_bar_height = 8.f;
  

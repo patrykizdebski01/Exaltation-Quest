@@ -16,6 +16,9 @@ Player::Player() : sf::CircleShape(param::player_radius) {
   gold = 0;
   kills = 0;
   score = 0;
+  damage_multiplier = 1.f;
+  cooldown_multiplier = 1.f;
+  speed_multiplier = 1.f;
 }
 void Player::gain_xp(const float &amount) {
   xp += amount;
@@ -43,7 +46,7 @@ void Player::update(const float &dt) {
   if (length > 0.f)
     direction = sf::Vector2f(direction.x / length, direction.y / length);
 
-  move(direction * param::player_speed * dt);
+    move(direction * param::player_speed * speed_multiplier * dt);
 
   //Keep the player inside the map
   sf::Vector2f position = getPosition();

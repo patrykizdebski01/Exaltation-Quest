@@ -18,4 +18,6 @@ struct Hud{
   //A box with part of it filled in. fraction goes from 0 (empty) to 1 (full).
   static void draw_bar(sf::RenderWindow &window, float x, float y, float width, float height, float fraction);
   static void draw_text(sf::RenderWindow &window, const std::string &text, float x, float y, unsigned size, bool centred);
+  //Arrows on the edge of the screen pointing at relics that are off screen
+  static void draw_arrows(sf::RenderWindow &window);
 };

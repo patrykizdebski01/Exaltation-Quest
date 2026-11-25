@@ -61,7 +61,38 @@ void Hud::draw_text(sf::RenderWindow &window, const std::string &text, float x, 
 }
 
 
+//For every relic that is off screen, draw an arrow on the edge of the screen pointing at it.
+void Hud::draw_arrows(sf::RenderWindow &window) {
+  const float half_width = param::game_width / 2.f;
+  const float half_height = param::game_height / 2.f;
 
+  for (const Relic &relic : gs::relics) {
+    sf::Vector2f offset = relic.getPosition() - gs::player.getPosition();
+
+    //Already on screen, so no arrow is needed
+    if (std::fabs(offset.x) < half_width && std::fabs(offset.y) < half_height)
+      continue;
+
+    //Slide along the line from the middle of the screen towards the relic,
+    //and stop when we reach the edge (a little inside it)
+    float scale_x = 1000000.f;
+    float scale_y = 1000000.f;
+    if (std::fabs(offset.x) > 0.001f)
+      scale_x = (half_width - param::arrow_margin) / std::fabs(offset.x);
+    if (std::fabs(offset.y) > 0.001f)
+      scale_y = (half_height - param::arrow_margin) / std::fabs(offset.y);
+    float scale = scale_x < scale_y ? scale_x : scale_y;
+
+    //A triangle pointing along +x, turned to face the relic
+    sf::ConvexShape arrow(3);
+    arrow.setPoint(0, sf::Vector2f(14.f, 0.f));
+    arrow.setPoint(1, sf::Vector2f(-10.f, -9.f));
+    arrow.setPoint(2, sf::Vector2f(-10.f, 9.f));
+    arrow.setPosition(half_width + offset.x * scale, half_height + offset.y * scale);
+    arrow.setRotation(std::atan2(offset.y, offset.x) * 180.f / 3.14159265f);
+    window.draw(arrow);
+  }
+}
 void Hud::render(sf::RenderWindow &window) {
   const Player &player = gs::player;
 
@@ -75,7 +106,7 @@ void Hud::render(sf::RenderWindow &window) {
 
   //Everything below is drawn in screen space, so it does not move with the camera
   window.setView(window.getDefaultView());
-
+  draw_arrows(window);
 
 
   //Weapon slots, top left. Each equipped weapon draws its own icon in its slot.
@@ -91,8 +122,12 @@ void Hud::render(sf::RenderWindow &window) {
 
   //Relic slots, underneath. Empty until relics are added.
   row_y += step;
-  for (int i = 0; i < param::relic_slots; ++i)
+    for (int i = 0; i < param::relic_slots; ++i) {
     draw_box(window, left + i * step, row_y, slot, slot);
+    //A collected relic shows its short name in its slot (TODO: draw its sprite instead)
+    if (i < static_cast<int>(gs::collected_relics.size()))
+      draw_text(window, gs::collected_relics[i].get_short_name(), left + i * step + slot / 2.f, row_y + slot / 2.f - 10.f, 16, true);
+  }
 
   //XP bar under the relics, with the level next to it
   row_y += step;

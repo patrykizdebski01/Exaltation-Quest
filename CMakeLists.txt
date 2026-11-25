@@ -52,6 +52,8 @@ add_executable(equest src/main.cpp
     CMakeLists.txt
     src/levelup.hpp
     src/levelup.cpp
+    src/relic.hpp
+    src/relic.cpp
     )
 target_include_directories(equest PRIVATE ${SFML_INCS} src)
 target_link_libraries(equest sfml-graphics)
