@@ -54,6 +54,11 @@ add_executable(equest src/main.cpp
     src/levelup.cpp
     src/relic.hpp
     src/relic.cpp
+    src/sprites.hpp
+    src/sprites.cpp
     )
+add_custom_command(TARGET equest POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          ${CMAKE_SOURCE_DIR}/resources $<TARGET_FILE_DIR:equest>/resources)
 target_include_directories(equest PRIVATE ${SFML_INCS} src)
 target_link_libraries(equest sfml-graphics)
