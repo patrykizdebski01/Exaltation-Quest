@@ -1,6 +1,7 @@
 #include "game_system.hpp"
 #include "game_parameters.hpp"
 #include "hud.hpp"
+#include "levelup.hpp"
 
 using param = Parameters;
 
@@ -33,12 +34,8 @@ void GameSystem::reset() {
   camera.setCenter(player.getPosition());
 
   //The warrior starts with the greatsword
-  weapons.clear();
   weapons.push_back(std::make_shared<Greatsword>());
-    weapons.push_back(std::make_shared<Greatsword>());
-  //TODO: only for testing. Later the player gets these from level ups.
-  weapons.push_back(std::make_shared<FireAura>());
-  weapons.push_back(std::make_shared<ThrowingAxes>());
+  LevelUp::clean();
 
   
 }
@@ -51,12 +48,30 @@ void GameSystem::clean() {
 }
 
 void GameSystem::update(const float &dt) {
+  //The game is paused while the level-up screen is open
+  if (LevelUp::shown) {
+    LevelUp::update(dt);
+    return;
+  }
   elapsed += dt;
   player.update(dt);
   for (std::shared_ptr<Weapon> &weapon : weapons)
     weapon->update(dt);
   //The camera follows the player
   camera.setCenter(player.getPosition());
+  //FOR TESTING LEVEL UPS ONLY 
+  static bool l_was_down = false;
+  bool l_down = sf::Keyboard::isKeyPressed(sf::Keyboard::L);
+  if (l_down && !l_was_down)
+    player.gain_xp(player.xp_to_next);
+  l_was_down = l_down;
+  if (player.xp >= player.xp_to_next){
+    LevelUp::show();
+    player.level_up();
+  }
+  //FOR TESTING LEVEL UPS ONLY ^^^^
+
+
 }
 
 void GameSystem::render(sf::RenderWindow &window) {
@@ -66,4 +81,6 @@ void GameSystem::render(sf::RenderWindow &window) {
       weapon->render(window);
   window.draw(player);
   Hud::render(window);
+  if (LevelUp::shown)
+    LevelUp::render(window);
 }

@@ -17,6 +17,15 @@ Player::Player() : sf::CircleShape(param::player_radius) {
   kills = 0;
   score = 0;
 }
+void Player::gain_xp(const float &amount) {
+  xp += amount;
+}
+
+void Player::level_up() {
+  xp -= xp_to_next;
+  level++;
+  xp_to_next *= param::xp_growth;
+}
 
 void Player::update(const float &dt) {
   sf::Vector2f direction(0.f, 0.f);

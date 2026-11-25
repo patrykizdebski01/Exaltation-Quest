@@ -12,6 +12,13 @@ struct Parameters{
   static constexpr float xp_first_level = 10.f;   // XP needed for the first level up
   static constexpr float run_length = 1200.f;     // a run lasts 20 minutes
 
+  static constexpr float xp_growth = 1.3f;        // each level needs this many times more XP than the last
+
+  // Level up / weapon upgrades
+  static constexpr int levelup_choices = 3;       // how many options the level-up screen offers
+  static constexpr int weapon_max_level = 5;
+  static constexpr float upgrade_damage = 0.25f;  // each weapon level adds this much damage (25%)
+  static constexpr float upgrade_speed = 0.1f;    // and makes the weapon attack this much faster (10%)
   // HUD
   static constexpr float hud_margin = 20.f;       // gap between the HUD and the edge of the screen
   static constexpr float slot_size = 48.f;        // one weapon / relic slot

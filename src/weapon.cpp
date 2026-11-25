@@ -2,6 +2,7 @@
 #include "weapon.hpp"
 #include "game_system.hpp"
 #include "game_parameters.hpp"
+#include "levelup.hpp"
 
 using param = Parameters;
 using gs = GameSystem;
@@ -13,6 +14,27 @@ Weapon::~Weapon() = default;
 
 void Weapon::update(const float &dt) {
   _cooldown -= dt;
+}
+int Weapon::get_level() const {
+  return _level;
+}
+
+void Weapon::upgrade() {
+  if (_level < param::weapon_max_level)
+    _level++;
+}
+
+std::string Weapon::get_upgrade_text() const {
+  return "Damage +" + std::to_string(static_cast<int>(param::upgrade_damage * 100.f)) +
+         "%, attacks " + std::to_string(static_cast<int>(param::upgrade_speed * 100.f)) + "% faster";
+}
+
+float Weapon::damage_scale() const {
+  return 1.f + param::upgrade_damage * (_level - 1);
+}
+
+float Weapon::speed_scale() const {
+  return 1.f + param::upgrade_speed * (_level - 1);
 }
 void Weapon::render(sf::RenderWindow &window) const {
   window.draw(*this);
@@ -55,7 +77,7 @@ void Greatsword::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float
 void Greatsword::swing() {
   _side = -_side;                                  // swing the other way than last time
   _swing_time = param::greatsword_swing_time;
-  _cooldown = param::greatsword_cooldown;
+  _cooldown = _cooldown = param::greatsword_cooldown / speed_scale();
 }
 
 //Draws the swing as a half circle that opens from straight up to straight down.
@@ -78,7 +100,7 @@ bool Greatsword::is_swinging() const {
 //TODO: the design document says the damage grows with the player's health.
 //Once the player has health, scale this by (1 + health / max health).
 float Greatsword::get_damage() const {
-  return param::greatsword_damage;
+  return param::greatsword_damage * damage_scale();
 }
 
 //Used by enemies later: for each enemy call  sword->hits(enemy.getPosition(), enemy.radius)
@@ -124,7 +146,7 @@ void FireAura::update(const float &dt) {
 
   if (_cooldown <= 0.f) {
     _ticking = true;
-    _cooldown = param::fire_aura_interval;
+    _cooldown = param::fire_aura_interval / speed_scale();
     _flash = param::fire_aura_flash;
     setOutlineThickness(6.f);   // flash thicker so you can see it hurt
   }
@@ -143,7 +165,7 @@ bool FireAura::is_ticking() const {
 }
 
 float FireAura::get_damage() const {
-  return param::fire_aura_damage;
+  return param::fire_aura_damage* damage_scale();
 }
 
 //Used by enemies later:  if (aura->is_ticking() && aura->hits(enemy.getPosition(), enemy.radius)) ...
@@ -164,7 +186,7 @@ void ThrowingAxes::update(const float &dt) {
 
   if (_cooldown <= 0.f) {
     throw_axes();
-    _cooldown = param::axe_cooldown;
+    _cooldown = param::axe_cooldown / speed_scale();
   }
 
   //Move, spin and age every axe. Axes that have run out of time are removed.
@@ -223,7 +245,7 @@ void ThrowingAxes::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const flo
 }
 
 float ThrowingAxes::get_damage() const {
-  return param::axe_damage;
+  return param::axe_damage * damage_scale();
 }
 
 //Used by enemies later:  if (axes->hits(enemy.getPosition(), enemy.radius)) enemy takes axes->get_damage()

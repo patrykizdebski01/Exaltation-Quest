@@ -11,6 +11,11 @@ public:
   virtual void update(const float &dt);
   //The name shown in the HUD
   virtual std::string get_name() const = 0;
+  int get_level() const;
+  //Makes the weapon stronger: more damage, and it attacks a bit faster
+  virtual void upgrade();
+  //Text for the level-up screen, e.g. "Damage +25%, attacks 10% faster"
+  std::string get_upgrade_text() const;
   //Draws the weapon in the world. Most weapons are just their own shape, so that is the default.
   virtual void render(sf::RenderWindow &window) const;
   //Draws the weapon's icon inside a HUD slot. position = top left of the slot, size = width and height.
@@ -19,6 +24,10 @@ public:
 protected:
   //Seconds until the weapon can attack again
   float _cooldown = 0.f;
+  int _level = 1;
+  //1.0 at level 1, bigger every level
+  float damage_scale() const;
+  float speed_scale() const;
 };
 
 //The warrior's weapon. It swings in a half circle round the player, alternating right, left, right

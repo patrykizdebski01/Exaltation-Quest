@@ -6,7 +6,10 @@ public:
   Player();
   //Moves the player with W A S D and keeps it inside the map
   void update(const float &dt);
-
+  //Adds XP. The level up itself is checked in GameSystem::update.
+  void gain_xp(const float &amount);
+  //Takes the XP for the current level and makes the next level harder
+  void level_up();
   //Shown in the HUD
   float max_health;
   float health;
