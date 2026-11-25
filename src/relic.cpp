@@ -1,7 +1,7 @@
 #include <cmath>
 #include "relic.hpp"
 #include "game_parameters.hpp"
-
+#include "sprites.hpp"
 using param = Parameters;
 
 Relic::Relic(const RelicType &type, const sf::Vector2f &position) : sf::CircleShape(param::player_radius, static_cast<int>(type) + 3), _type(type){
@@ -24,15 +24,24 @@ std::string Relic::get_name() const {
         
     }
 }
-std::string Relic::get_short_name() const {
-  switch (_type) {
+//Which picture on the spritesheet each relic uses
+static Icon icon_for(const RelicType &type) {
+  switch (type) {
     case RelicType::damage:
-      return "DMG";
+      return Icon::orb;
     case RelicType::cooldown:
-      return "CD";
+      return Icon::watch;
     default:
-      return "SPD";
+      return Icon::boots;
   }
+}
+
+void Relic::render(sf::RenderWindow &window) const {
+  Sprites::draw(window, icon_for(_type), getPosition(), param::relic_draw_size);
+}
+
+void Relic::draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const {
+  Sprites::draw(window, icon_for(_type), position + sf::Vector2f(size / 2.f, size / 2.f), size);
 }
 bool Relic::touching(const sf::Vector2f &position, const float &radius) const {
   sf::Vector2f offset = position - getPosition();

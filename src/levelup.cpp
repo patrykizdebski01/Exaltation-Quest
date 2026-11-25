@@ -115,24 +115,24 @@ void LevelUp::render(sf::RenderWindow &window) {
   const float row_width = count * box_width + (count - 1) * gap;
   const float start_x = (screen_width - row_width) / 2.f;
   const float box_y = 230.f;
-  const float icon_size = param::slot_size;   // a local copy, because draw_icon takes a reference
+  const float icon_size = 96.f;   // a local copy, because draw_icon takes a reference
 
-  for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) {
     const LevelUpChoice &choice = choices[i];
     const float x = start_x + i * (box_width + gap);
     const float middle = x + box_width / 2.f;
 
     Hud::draw_box(window, x, box_y, box_width, box_height);
     Hud::draw_text(window, std::to_string(i + 1), x + 14.f, box_y + 8.f, 24, false);
-    choice.weapon->draw_icon(window, sf::Vector2f(middle - icon_size / 2.f, box_y + 30.f), icon_size);
-    Hud::draw_text(window, choice.weapon->get_name(), middle, box_y + 100.f, 30, true);
+    choice.weapon->draw_icon(window, sf::Vector2f(middle - icon_size / 2.f, box_y + 36.f), icon_size);
+    Hud::draw_text(window, choice.weapon->get_name(), middle, box_y + 140.f, 30, true);
 
     if (choice.is_new) {
-      Hud::draw_text(window, "NEW WEAPON", middle, box_y + 150.f, 22, true);
+      Hud::draw_text(window, "NEW WEAPON", middle, box_y + 190.f, 22, true);
     } else {
       Hud::draw_text(window, "Level " + std::to_string(choice.weapon->get_level()) + " -> " +
-                             std::to_string(choice.weapon->get_level() + 1), middle, box_y + 150.f, 22, true);
-      Hud::draw_text(window, choice.weapon->get_upgrade_text(), middle, box_y + 190.f, 16, true);
+                             std::to_string(choice.weapon->get_level() + 1), middle, box_y + 190.f, 22, true);
+      Hud::draw_text(window, choice.weapon->get_upgrade_text(), middle, box_y + 232.f, 16, true);
     }
   }
 

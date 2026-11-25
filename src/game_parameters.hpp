@@ -14,7 +14,8 @@ struct Parameters{
 
   static constexpr float xp_growth = 1.3f;        // each level needs this many times more XP than the last
   // Relics
-  static constexpr float relic_radius = 18.f;                    // size of a relic on the map
+  static constexpr float relic_radius = 30.f;
+  static constexpr float relic_draw_size = 64.f;                 // how big a relic's sprite is drawn on the map (2 x 32)                    // size of a relic on the map
   static constexpr float relic_edge_margin = 400.f;              // relics never spawn this close to the edge of the map
   static constexpr float relic_min_distance_from_start = 1500.f; // or this close to where the player starts
   static constexpr float relic_min_distance_between = 2500.f;    // or this close to each other
@@ -26,9 +27,12 @@ struct Parameters{
   static constexpr int weapon_max_level = 5;
   static constexpr float upgrade_damage = 0.25f;  // each weapon level adds this much damage (25%)
   static constexpr float upgrade_speed = 0.1f;    // and makes the weapon attack this much faster (10%)
+  // Sprites
+  static constexpr float sprite_size = 32.f;      // every picture on the spritesheet is 32 x 32 pixels
+  static constexpr int sprites_per_row = 4;       // the spritesheet is 4 pictures wide
   // HUD
   static constexpr float hud_margin = 20.f;       // gap between the HUD and the edge of the screen
-  static constexpr float slot_size = 48.f;        // one weapon / relic slot
+  static constexpr float slot_size = 64.f;        // one weapon / relic slot
   static constexpr float slot_gap = 8.f;
   static constexpr int weapon_slots = 6;
   static constexpr int relic_slots = 3;

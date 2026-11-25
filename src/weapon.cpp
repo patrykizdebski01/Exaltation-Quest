@@ -3,6 +3,7 @@
 #include "game_system.hpp"
 #include "game_parameters.hpp"
 #include "levelup.hpp"
+#include "sprites.hpp"
 
 using param = Parameters;
 using gs = GameSystem;
@@ -71,8 +72,8 @@ std::string Greatsword::get_name() const {
   return "Greatsword";
 }
 
-//The HUD icon: a sword made from three rectangles, tilted 45 degrees, in the middle of the slot.
-void Greatsword::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
+void Greatsword::draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const {
+  Sprites::draw(window, Icon::sword, position + sf::Vector2f(size / 2.f, size / 2.f), size);
 }
 
 void Greatsword::swing() {
@@ -157,8 +158,8 @@ std::string FireAura::get_name() const {
   return "Fire Aura";
 }
 
-//TODO: draw the fire aura sprite from the spritesheet here, inside the slot
-void FireAura::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
+void FireAura::draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const {
+  Sprites::draw(window, Icon::book, position + sf::Vector2f(size / 2.f, size / 2.f), size);
 }
 
 bool FireAura::is_ticking() const {
@@ -216,34 +217,19 @@ void ThrowingAxes::throw_axes() {
     _axes.push_back(axe);
   }
 }
-
-//Each axe is a handle and a triangle head, spun round its middle
+void ThrowingAxes::draw_icon(sf::RenderWindow &window, const sf::Vector2f &position, const float &size) const {
+  Sprites::draw(window, Icon::axe, position + sf::Vector2f(size / 2.f, size / 2.f), size);
+}
+//Each thrown axe is the axe sprite, spinning round its middle
 void ThrowingAxes::render(sf::RenderWindow &window) const {
-  const float r = param::axe_radius;
-  for (const Axe &axe : _axes) {
-    sf::Transform spin;
-    spin.translate(axe.position);
-    spin.rotate(axe.angle);
-
-    sf::RectangleShape handle(sf::Vector2f(r * 2.f, r * 0.25f));
-    handle.setPosition(-r, -r * 0.125f);
-    window.draw(handle, spin);
-
-    sf::ConvexShape head(3);
-    head.setPoint(0, sf::Vector2f(r * 0.2f, 0.f));
-    head.setPoint(1, sf::Vector2f(r * 0.9f, -r * 0.9f));
-    head.setPoint(2, sf::Vector2f(r * 0.9f, r * 0.9f));
-    window.draw(head, spin);
-  }
+  for (const Axe &axe : _axes)
+    Sprites::draw(window, Icon::axe, axe.position, param::sprite_size, axe.angle);
 }
 
 std::string ThrowingAxes::get_name() const {
   return "Throwing Axes";
 }
 
-//TODO: draw the throwing axes sprite from the spritesheet here, inside the slot
-void ThrowingAxes::draw_icon(sf::RenderWindow &, const sf::Vector2f &, const float &) const {
-}
 
 float ThrowingAxes::get_damage() const {
   return param::axe_damage * damage_scale();

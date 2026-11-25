@@ -125,8 +125,9 @@ void Hud::render(sf::RenderWindow &window) {
     for (int i = 0; i < param::relic_slots; ++i) {
     draw_box(window, left + i * step, row_y, slot, slot);
     //A collected relic shows its short name in its slot (TODO: draw its sprite instead)
+        //A collected relic draws its sprite in its slot
     if (i < static_cast<int>(gs::collected_relics.size()))
-      draw_text(window, gs::collected_relics[i].get_short_name(), left + i * step + slot / 2.f, row_y + slot / 2.f - 10.f, 16, true);
+      gs::collected_relics[i].draw_icon(window, sf::Vector2f(left + i * step, row_y), slot);
   }
 
   //XP bar under the relics, with the level next to it

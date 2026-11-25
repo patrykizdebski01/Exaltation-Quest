@@ -1,9 +1,11 @@
 #include "game_system.hpp"
 #include "game_parameters.hpp"
 #include "hud.hpp"
+#include "sprites.hpp"
 #include "levelup.hpp"
 #include <cmath>
 #include <random>
+
 
 using param = Parameters;
 
@@ -60,6 +62,7 @@ void GameSystem::init() {
     grid.append(sf::Vertex(sf::Vector2f(param::map_width, static_cast<float>(i * param::game_height))));
   }
   Hud::init();
+  Sprites::init();
   reset();
 }
 
@@ -129,7 +132,7 @@ void GameSystem::render(sf::RenderWindow &window) {
   window.setView(camera);
   window.draw(grid);
   for (const Relic &relic : relics)
-    window.draw(relic);
+    relic.render(window);
   for (const std::shared_ptr<Weapon> &weapon : weapons)
       weapon->render(window);
   window.draw(player);
