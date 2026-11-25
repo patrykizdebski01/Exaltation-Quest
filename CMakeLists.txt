@@ -50,6 +50,8 @@ add_executable(equest src/main.cpp
     src/hud.cpp
     src/hud.hpp
     CMakeLists.txt
+    src/levelup.hpp
+    src/levelup.cpp
     )
 target_include_directories(equest PRIVATE ${SFML_INCS} src)
 target_link_libraries(equest sfml-graphics)
