@@ -6,6 +6,7 @@
 #include <cmath>
 #include <random>
 #include <iostream>
+#include "menu.hpp"
 
 using param = Parameters;
 
@@ -107,6 +108,19 @@ void GameSystem::clean() {
 }
 
 void GameSystem::update(const float &dt) {
+
+    // Check if the player has died.
+    if (player.health <= 0.f)
+    {
+        // Save the score and kills from this run.
+        Menu::record_run(player.score, player.kills);
+
+        // Return to the main menu.
+        Menu::state = GameState::Menu;
+
+        // Stop updating the game.
+        return;
+    }
   //The game is paused while the level-up screen is open
   if (LevelUp::shown) {
     LevelUp::update(dt);

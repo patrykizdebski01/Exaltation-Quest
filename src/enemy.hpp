@@ -7,3 +7,10 @@
 //  - XP drops, levelling up and choosing upgrades
 //  - bosses on a timer, the 20 minute run, win and lose
 //  - performance: lots of enemies at 1080p / 60 fps (brief: evidence of performance analysis)
+
+
+
+
+// Call this when an enemy dies,enemyScore is the number of points that enemy gives.
+void enemy_killed(int enemyScore);
+

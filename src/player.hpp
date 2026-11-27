@@ -25,4 +25,5 @@ public:
   float damage_multiplier;
   float cooldown_multiplier;
   float speed_multiplier;
+
 };

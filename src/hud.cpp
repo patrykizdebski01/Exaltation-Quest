@@ -20,7 +20,7 @@ static std::string format_time(float seconds) {
 }
 
 void Hud::init() {
-  font_loaded = font.loadFromFile("resources/fonts/font.ttf") ||
+  font_loaded = font_loaded = font.loadFromFile("resources/fonts/arial.ttf") ||
                 font.loadFromFile("C:/Windows/Fonts/arial.ttf");
   if (!font_loaded) {
     std::cerr << "Failed to load a font!" << std::endl;
