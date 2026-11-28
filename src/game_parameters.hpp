@@ -66,5 +66,9 @@ struct Parameters{
   static constexpr float axe_radius = 14.f;
   static constexpr float axe_damage = 14.f;
 
-
+  // Enemies
+  static constexpr float min_distance = 600.f;
+  static constexpr float deviation = 150.f;
+  static constexpr float spawn_interval = 0.6f;
+  static constexpr float enemy_radius = 15.f;
 };

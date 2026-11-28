@@ -13,6 +13,7 @@ Player GameSystem::player;
 std::vector<std::shared_ptr<Weapon>> GameSystem::weapons;
 std::vector<Relic> GameSystem::relics;
 std::vector<Relic> GameSystem::collected_relics;
+std::vector<Enemy> GameSystem::enemies;
 
 sf::View GameSystem::camera;
 sf::VertexArray GameSystem::grid;
@@ -20,6 +21,9 @@ sf::Texture GameSystem::grass;
 sf::RectangleShape GameSystem::ground;
 bool GameSystem::grass_loaded = false;
 float GameSystem::elapsed = 0.f;
+
+static std::mt19937 engine((std::random_device())());
+static sf::Clock spawn_clock;
 
 static float distance_between(const sf::Vector2f &a, const sf::Vector2f &b) {
   sf::Vector2f offset = a - b;
@@ -52,6 +56,22 @@ void GameSystem::place_relics() {
     }
     relics.push_back(Relic(static_cast<RelicType>(type), position));
   }
+}
+//Spawns one enemy at a random position at least min_distance from the player
+void GameSystem::spawn_enemy() {
+    std::uniform_real_distribution<float> angle_dist(0.f, 2.f * 3.14159265f);
+    std::uniform_real_distribution<float> dev_dist(0.f, param::deviation);
+    const float angle = angle_dist(engine);
+    const float distance = param::min_distance + dev_dist(engine);
+    const sf::Vector2f pos = player.getPosition() +
+        sf::Vector2f(std::cos(angle) * distance, std::sin(angle) * distance);
+
+    Enemy e;
+    e.shape.setRadius(param::enemy_radius);
+    e.shape.setOrigin(sf::Vector2f(param::enemy_radius, param::enemy_radius));
+    e.shape.setFillColor(sf::Color::Red);
+    e.shape.setPosition(pos);
+    enemies.push_back(e);
 }
 void GameSystem::init() {
   //Lines round the edge of the map and round every screen-sized square,
@@ -94,7 +114,8 @@ void GameSystem::reset() {
   LevelUp::clean();
   place_relics();
 
-  
+  enemies.clear();
+  spawn_clock.restart();
 }
 
 void GameSystem::clean() {
@@ -104,6 +125,7 @@ void GameSystem::clean() {
   grid.clear();
   relics.clear();
   collected_relics.clear();
+  enemies.clear();
 }
 
 void GameSystem::update(const float &dt) {
@@ -127,6 +149,38 @@ void GameSystem::update(const float &dt) {
       ++i;
     }
   }
+  //Spawn enemies on a timer
+if (spawn_clock.getElapsedTime().asSeconds() >= param::spawn_interval) {
+  spawn_clock.restart();
+  spawn_enemy();
+}
+
+//Move enemies toward the player
+for (Enemy &e : enemies)
+  e.update(dt, player.getPosition());
+
+//Despawn dead enemies
+enemies.erase(
+  std::remove_if(enemies.begin(), enemies.end(),
+                 [](const Enemy &e) { return e.isDead(); }),
+  enemies.end());
+
+//Stop enemies overlapping each other
+for (std::size_t i = 0; i < enemies.size(); ++i) {
+  for (std::size_t j = i + 1; j < enemies.size(); ++j) {
+    const float dist = distance_between(enemies[i].shape.getPosition(),
+                                        enemies[j].shape.getPosition());
+    const float min_dist = enemies[i].radius + enemies[j].radius;
+    if (dist < min_dist && dist > 0.001f) {
+      const sf::Vector2f offset = enemies[j].shape.getPosition() -
+                                  enemies[i].shape.getPosition();
+      const sf::Vector2f push(offset.x / dist, offset.y / dist);
+      const float overlap = (min_dist - dist) * 0.5f;
+      enemies[i].shape.move(-push * overlap);
+      enemies[j].shape.move(push * overlap);
+    }
+  }
+}
     //The camera follows the player
   camera.setCenter(player.getPosition());
   //FOR TESTING LEVEL UPS ONLY 
@@ -153,6 +207,8 @@ void GameSystem::render(sf::RenderWindow &window) {
     relic.render(window);
   for (const std::shared_ptr<Weapon> &weapon : weapons)
       weapon->render(window);
+  for (const Enemy& e : enemies)
+      e.render(window);
   //The player's circle is only used for its position and collisions. The knight sprite is drawn instead.
   Sprites::draw_entity(window, Entity::knight, player.getPosition(), param::player_draw_size, player.facing_left);  
   Hud::render(window);

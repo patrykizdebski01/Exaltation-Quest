@@ -5,6 +5,7 @@
 #include "player.hpp"
 #include "weapon.hpp"
 #include "relic.hpp"
+#include "enemy.hpp"
 
 struct GameSystem{
   static Player player;
@@ -19,6 +20,8 @@ struct GameSystem{
   static std::vector<Relic> relics;
   //Relics the player has picked up, shown in the HUD
   static std::vector<Relic> collected_relics;
+  //Enemies that chase the player
+  static std::vector<Enemy> enemies;
   //Seconds since the run started
   static float elapsed;
 
@@ -31,4 +34,5 @@ struct GameSystem{
 protected:
   //Puts one of each relic in a random place on the map
   static void place_relics();
+  static void spawn_enemy();
 };

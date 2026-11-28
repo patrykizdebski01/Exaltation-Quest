@@ -7,3 +7,18 @@
 //  - XP drops, levelling up and choosing upgrades
 //  - bosses on a timer, the 20 minute run, win and lose
 //  - performance: lots of enemies at 1080p / 60 fps (brief: evidence of performance analysis)
+
+#pragma once
+#include <SFML/Graphics.hpp>
+
+struct Enemy
+{
+	sf::CircleShape shape;
+	float speed = 115.f;
+	float radius = 30.f;
+	float health = 10.f;
+
+	void update(float dt, const sf::Vector2f& playerPos);
+	void render(sf::RenderWindow& window) const;
+	bool isDead() const;
+};
